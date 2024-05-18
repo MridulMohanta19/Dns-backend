@@ -22,7 +22,6 @@ const addDomain = async (req, res) => {
   };
 
   try {
-    
     const data = await route53.createHostedZone(params).promise();
     const isCallerReferenceUnique = !hostedZones.HostedZones.some(
       (zone) => zone.CallerReference === callerReference
