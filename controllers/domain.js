@@ -104,4 +104,38 @@ const getRecords = async (req, res) => {
   }
 };
 
-export { addDomain, getDomain, deleteDomain, getHostedZone, getRecords };
+const addRecord = async (req, res) => {
+  try {
+    const { id, record } = req.body;
+    const { type, name, value, ttl } = record;
+
+    if (!id || !type || !name || !value || !ttl) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const params = {
+      HostedZoneId: id,
+      ChangeBatch: {
+        Changes: [
+          {
+            Action: "UPSERT",
+            ResourceRecordSet: {
+              Name: name,
+              Type: type,
+              TTL: parseInt(ttl),
+              ResourceRecords: [{ Value: value }],
+            },
+          },
+        ],
+      },
+    };
+
+    const data = await route53.changeResourceRecordSets(params).promise();
+    res.status(201).json(data);
+  } catch (error) {
+    console.error("Error adding DNS record:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export { addDomain, getDomain, deleteDomain, getHostedZone, getRecords, addRecord };
