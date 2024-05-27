@@ -131,10 +131,10 @@ const addRecord = async (req, res) => {
     };
 
     const data = await route53.changeResourceRecordSets(params).promise();
-    res.status(201).json(data);
+    res.status(200).json(data);
   } catch (error) {
     console.error("Error adding DNS record:", error);
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 };
 
